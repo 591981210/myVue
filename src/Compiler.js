@@ -14,6 +14,7 @@ class Compiler {
             let fragment = this.node2fragment(this.el)
             console.log(fragment);
             //2. 在内存中编译fragment
+            this.compile(fragment)
             //3. 把fragment一次性的添加到页面
         }
     }
@@ -34,8 +35,42 @@ class Compiler {
         })
         return fragment
     }
+
+
+    /**
+     * 编译文档碎片（内存中）
+     * @param {*} fragment
+     */
+    compile(fragment) {
+        let childNodes = fragment.childNodes
+        this.toArray(childNodes).forEach(node => {
+            // 编译子节点
+
+            if (this.isElementNode(node)) {
+                // 如果是元素， 需要解析指令
+            }
+
+            if (this.isTextNode(node)) {
+                // 如果是文本节点， 需要解析插值表达式
+            }
+
+            // 如果当前节点还有子节点，需要递归的解析
+            if (node.childNodes && node.childNodes.length > 0) {
+                this.compile(node)
+            }
+        })
+    }
+
     /* 工具方法 伪数组转成真数组*/
     toArray(likeArray) {
         return [].slice.call(likeArray)
+    }
+
+    isElementNode(node) {
+        //nodeType: 节点的类型  1：元素节点  3：文本节点
+        return node.nodeType === 1
+    }
+    isTextNode(node) {
+        return node.nodeType === 3
     }
 }
