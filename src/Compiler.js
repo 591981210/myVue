@@ -77,29 +77,11 @@ class Compiler {
                 let expr = attr.value
                 console.log(this);
 
-                //如果是 text 指令
-                if(type == 'text'){
-                    node.textContent = this.vm.$data[expr]
-                    console.log(node)
-                }
-                //如果是 htm 指令
-                if(type == 'html'){
-                    node.innerHTML = this.vm.$data[expr]
-                    console.log(node)
-                }
-
-                //解析 v-model 指令
-                if(type == 'model'){
-                    node.value = this.vm.$data[expr]
-                    console.log(node)
-                }
-
                 //解析 v-on 指令
                 if(this.isEventDirective(type)){
-                    //拿到事件类型
-                    let eventType =  type.split(":")[1]
-                    //绑定事件,并且改 this 指向
-                    node.addEventListener(eventType,this.vm.$methods[expr].bind(this.vm))
+                    CompileUtil['eventHandler'](node,this.vm,type,expr)
+                }else {
+                    CompileUtil[type] && CompileUtil[type](node,this.vm,expr)
                 }
             }
         })
@@ -127,4 +109,26 @@ class Compiler {
     isEventDirective(type) {
         return type.split(":")[0] === "on"
     }
+}
+
+let CompileUtil = {
+    // 处理v-text指令
+    text(node, vm, expr) {
+        node.textContent = vm.$data[expr]
+    },
+    // 处理v-html指令
+    html(node, vm, expr) {
+        node.innerHtml = vm.$data[expr]
+    },
+    model(node, vm, expr){
+        node.value = vm.$data[expr]
+    },
+    eventHandler(node, vm, type, expr) {
+        // 给当前元素注册事件即可
+        let eventType = type.split(":")[1]
+        let fn = vm.$methods && vm.$methods[expr]
+        if (eventType && fn) {
+            node.addEventListener(eventType, fn.bind(vm))
+        }
+    },
 }
