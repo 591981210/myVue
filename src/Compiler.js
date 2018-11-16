@@ -12,7 +12,6 @@ class Compiler {
         if (this.el) {
             //1. 把el中所有的子节点都放入到内存中， fragment节点片段在不回流,在内存里操作
             let fragment = this.node2fragment(this.el)
-            console.log(fragment);
             //2. 在内存中编译fragment
             this.compile(fragment)
             //3. 把fragment一次性的添加到页面
@@ -25,8 +24,6 @@ class Compiler {
         let fragment = document.createDocumentFragment()
         // 把el中所有的子节点挨个添加到文档碎片中
         let childNodes = node.childNodes
-        console.log(node);
-        console.dir(childNodes)
 
         //将childNodes伪数组转成真数组
         this.toArray(childNodes).forEach(node => {
@@ -51,6 +48,7 @@ class Compiler {
             }
             if (this.isTextNode(node)) {
                 // 如果是文本节点， 需要解析插值表达式
+                this.compileText(node)
             }
 
             // 如果当前节点还有子节点，需要递归的解析
@@ -65,7 +63,6 @@ class Compiler {
         // console.log(node)
         // 1. 获取到当前节点下所有的属性
         let attributes = node.attributes
-        console.log(attributes);
         // console.log(attributes instanceof Array);//验证是否伪数组
         this.toArray(attributes).forEach(attr => {
             // 2. 解析vue的指令（所以以v-开头的属性）
@@ -75,7 +72,6 @@ class Compiler {
             if (this.isDirective(attrName)) {
                 let type = attrName.slice(2) //截取 v- 之后的
                 let expr = attr.value
-                console.log(this);
 
                 //解析 v-on 指令
                 if(this.isEventDirective(type)){
@@ -85,6 +81,10 @@ class Compiler {
                 }
             }
         })
+    }
+    // 解析文本节点
+    compileText(node) {
+        CompileUtil.mustache(node, this.vm)
     }
 
     /* 工具方法 伪数组转成真数组*/
@@ -112,6 +112,16 @@ class Compiler {
 }
 
 let CompileUtil = {
+    mustache(node, vm) {
+        let txt = node.textContent
+        let reg = /\{\{(.+)\}\}/
+        console.log(reg.test(txt));
+        if (reg.test(txt)) {
+            let expr = RegExp.$1
+            // debugger
+            node.textContent = txt.replace(reg,vm.$data[expr])
+        }
+    },
     // 处理v-text指令
     text(node, vm, expr) {
         node.textContent = vm.$data[expr]
