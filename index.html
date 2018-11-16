@@ -10,6 +10,7 @@
     <p v-text="msg" title="text"></p>
     <p v-html="msg" title="html"></p>
     <input type="text" v-model="msg">
+    <p>{{car.brand}}</p>
     <button v-on:click="clickFn">按钮</button>
 </div>
 </body>
@@ -19,7 +20,10 @@
     const vm = new Vue({
         el: "#app",
         data: {
-            msg: 'hello vue'
+            msg: 'hello vue',
+            car:{
+                brand:"brand"
+            }
         },
         methods: {
             clickFn() {

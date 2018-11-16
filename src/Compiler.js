@@ -74,14 +74,15 @@ class Compiler {
                 let expr = attr.value
 
                 //解析 v-on 指令
-                if(this.isEventDirective(type)){
-                    CompileUtil['eventHandler'](node,this.vm,type,expr)
-                }else {
-                    CompileUtil[type] && CompileUtil[type](node,this.vm,expr)
+                if (this.isEventDirective(type)) {
+                    CompileUtil['eventHandler'](node, this.vm, type, expr)
+                } else {
+                    CompileUtil[type] && CompileUtil[type](node, this.vm, expr)
                 }
             }
         })
     }
+
     // 解析文本节点
     compileText(node) {
         CompileUtil.mustache(node, this.vm)
@@ -105,6 +106,7 @@ class Compiler {
     isDirective(attrName) {
         return attrName.startsWith("v-")
     }
+
     //解析
     isEventDirective(type) {
         return type.split(":")[0] === "on"
@@ -119,19 +121,20 @@ let CompileUtil = {
         if (reg.test(txt)) {
             let expr = RegExp.$1
             // debugger
-            node.textContent = txt.replace(reg,vm.$data[expr])
+            node.textContent = txt.replace(reg, this.getVMValue(vm, expr))
+
         }
     },
     // 处理v-text指令
     text(node, vm, expr) {
-        node.textContent = vm.$data[expr]
+        node.textContent = this.getVMValue(vm, expr)
     },
     // 处理v-html指令
     html(node, vm, expr) {
-        node.innerHtml = vm.$data[expr]
+        node.innerHtml = this.getVMValue(vm, expr)
     },
-    model(node, vm, expr){
-        node.value = vm.$data[expr]
+    model(node, vm, expr) {
+        node.value = this.getVMValue(vm, expr)
     },
     eventHandler(node, vm, type, expr) {
         // 给当前元素注册事件即可
@@ -140,5 +143,14 @@ let CompileUtil = {
         if (eventType && fn) {
             node.addEventListener(eventType, fn.bind(vm))
         }
+    },
+    // 这个方法用于获取VM中的数据
+    getVMValue(vm, expr) {
+        // 获取到data中的数据
+        let data = vm.$data
+        expr.split(".").forEach(key => {
+            data = data[key]
+        })
+        return data
     },
 }
