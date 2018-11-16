@@ -7,8 +7,9 @@
 <body>
 <div id="app">
     <p>{{msg}}</p>
-    <p v-text="msg"></p>
-    <p v-html="msg"></p>
+    <p v-text="msg" title="text"></p>
+    <p v-html="msg" title="html"></p>
+    <input type="text" v-model="msg">
 </div>
 </body>
 <script src="./src/Compiler.js"></script>

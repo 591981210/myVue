@@ -16,9 +16,9 @@ class Compiler {
             //2. 在内存中编译fragment
             this.compile(fragment)
             //3. 把fragment一次性的添加到页面
+            this.el.appendChild(fragment)
         }
     }
-
 
     /* 核心方法 */
     node2fragment(node) {
@@ -36,7 +36,6 @@ class Compiler {
         return fragment
     }
 
-
     /**
      * 编译文档碎片（内存中）
      * @param {*} fragment
@@ -48,8 +47,8 @@ class Compiler {
 
             if (this.isElementNode(node)) {
                 // 如果是元素， 需要解析指令
+                this.compileElement(node)
             }
-
             if (this.isTextNode(node)) {
                 // 如果是文本节点， 需要解析插值表达式
             }
@@ -57,6 +56,43 @@ class Compiler {
             // 如果当前节点还有子节点，需要递归的解析
             if (node.childNodes && node.childNodes.length > 0) {
                 this.compile(node)
+            }
+        })
+    }
+
+    // 解析html标签
+    compileElement(node) {
+        // console.log(node)
+        // 1. 获取到当前节点下所有的属性
+        let attributes = node.attributes
+        console.log(attributes);
+        // console.log(attributes instanceof Array);//验证是否伪数组
+        this.toArray(attributes).forEach(attr => {
+            // 2. 解析vue的指令（所以以v-开头的属性）
+            let attrName = attr.name
+
+            //是否是指令
+            if (this.isDirective(attrName)) {
+                let type = attrName.slice(2) //截取 v- 之后的
+                let attrValue = attr.value
+                console.log(this);
+
+                //如果是 text 指令
+                if(type == 'text'){
+                    node.textContent = this.vm.$data[attrValue]
+                    console.log(node)
+                }
+                //如果是 htm 指令
+                if(type == 'html'){
+                    node.innerHTML = this.vm.$data[attrValue]
+                    console.log(node)
+                }
+
+                //解析 v-model 指令
+                if(type == 'model'){
+                    node.value = this.vm.$data[attrValue]
+                    console.log(node)
+                }
             }
         })
     }
@@ -70,7 +106,13 @@ class Compiler {
         //nodeType: 节点的类型  1：元素节点  3：文本节点
         return node.nodeType === 1
     }
+
     isTextNode(node) {
         return node.nodeType === 3
+    }
+
+    //是否是指令
+    isDirective(attrName) {
+        return attrName.startsWith("v-")
     }
 }
