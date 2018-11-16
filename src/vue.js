@@ -5,7 +5,10 @@ class Vue {
         this.$data = options.data //data 数据
         this.$methods = options.methods //data 数据
 
-    //    如果指定了 el 参数,对 el 进行解析
+        //将需要监控的数据传入监视器
+        new Observer(this.$data)
+
+        //    如果指定了 el 参数,对 el 进行解析
         if (this.$el) {
             //负责解析模板的内容
             //需要模板和数据
