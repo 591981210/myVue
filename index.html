@@ -10,6 +10,7 @@
     <p v-text="msg" title="text"></p>
     <p v-html="msg" title="html"></p>
     <input type="text" v-model="msg">
+    <button v-on:click="clickFn">按钮</button>
 </div>
 </body>
 <script src="./src/Compiler.js"></script>
@@ -19,6 +20,12 @@
         el: "#app",
         data: {
             msg: 'hello vue'
+        },
+        methods: {
+            clickFn() {
+                console.log(111)
+                console.log(this);
+            }
         }
     })
 </script>

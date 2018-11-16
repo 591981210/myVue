@@ -3,6 +3,7 @@ class Vue {
         //给 vue 实力添加属性
         this.$el = options.el //id
         this.$data = options.data //data 数据
+        this.$methods = options.methods //data 数据
 
     //    如果指定了 el 参数,对 el 进行解析
         if (this.$el) {

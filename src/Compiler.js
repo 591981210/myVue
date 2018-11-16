@@ -74,24 +74,32 @@ class Compiler {
             //是否是指令
             if (this.isDirective(attrName)) {
                 let type = attrName.slice(2) //截取 v- 之后的
-                let attrValue = attr.value
+                let expr = attr.value
                 console.log(this);
 
                 //如果是 text 指令
                 if(type == 'text'){
-                    node.textContent = this.vm.$data[attrValue]
+                    node.textContent = this.vm.$data[expr]
                     console.log(node)
                 }
                 //如果是 htm 指令
                 if(type == 'html'){
-                    node.innerHTML = this.vm.$data[attrValue]
+                    node.innerHTML = this.vm.$data[expr]
                     console.log(node)
                 }
 
                 //解析 v-model 指令
                 if(type == 'model'){
-                    node.value = this.vm.$data[attrValue]
+                    node.value = this.vm.$data[expr]
                     console.log(node)
+                }
+
+                //解析 v-on 指令
+                if(this.isEventDirective(type)){
+                    //拿到事件类型
+                    let eventType =  type.split(":")[1]
+                    //绑定事件,并且改 this 指向
+                    node.addEventListener(eventType,this.vm.$methods[expr].bind(this.vm))
                 }
             }
         })
@@ -114,5 +122,9 @@ class Compiler {
     //是否是指令
     isDirective(attrName) {
         return attrName.startsWith("v-")
+    }
+    //解析
+    isEventDirective(type) {
+        return type.split(":")[0] === "on"
     }
 }
