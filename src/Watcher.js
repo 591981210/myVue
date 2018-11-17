@@ -1,5 +1,6 @@
 /* 
 watcher模块负责把compile模块与observe模块关联起来
+一个 watcher相当于一个订阅者
 */
 class Watcher {
     // vm: 当前的vue实例
@@ -10,8 +11,13 @@ class Watcher {
         this.expr = expr
         this.cb = cb
 
+        // this表示的就是新创建的watcher对象
+        // 存储到Dep.target属性上
+        Dep.target = this
         // 需要把expr的旧值给存储起来
         this.oldValue = this.getVMValue(vm, expr)
+        // 清空Dep.target
+        Dep.target = null
     }
 
     update () {
@@ -33,3 +39,24 @@ class Watcher {
     }
 }
 
+
+/* dep对象用于管理所有的订阅者和通知这些订阅者 */
+class Dep {
+    constructor() {
+        // 用于管理订阅者
+        this.subs = []
+    }
+
+    // 添加订阅者
+    addSub(watcher) {
+        this.subs.push(watcher)
+    }
+
+    // 通知
+    notify() {
+        // 遍历所有的订阅者，调用watcher的update方法
+        this.subs.forEach(sub => {
+            sub.update()
+        })
+    }
+}

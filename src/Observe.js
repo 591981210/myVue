@@ -30,11 +30,13 @@ class Observer {
     // dep保存了所有的订阅了该数据的订阅者
     defineReactive(obj, key, value) {
         let that = this
+        let dep = new Dep()
         Object.defineProperty(obj, key, {
             enumerable: true,
             configurable: true,
             get() {
-                console.log("获取了值:" + value)
+                // 如果Dep.target中有watcher对象，存储到订阅者数组中
+                Dep.target && dep.addSub(Dep.target)
                 return value
             },
             set(newValue) {
@@ -42,12 +44,10 @@ class Observer {
                     return
                 }
                 value = newValue
-                console.log("设置了值:" + value)
                 // 如果newValue是一个对象，也应该对她进行劫持
                 that.walk(newValue)
-
-                //数据改变,更新数据
-                window.watcher.update()
+                // 发布通知，让所有的订阅者更新内容
+                dep.notify()
             }
         })
     }

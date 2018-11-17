@@ -120,24 +120,34 @@ let CompileUtil = {
         console.log(reg.test(txt));
         if (reg.test(txt)) {
             let expr = RegExp.$1
+            console.log(expr);
             // debugger
             node.textContent = txt.replace(reg, this.getVMValue(vm, expr))
 
+            new Watcher(vm, expr, newValue => {
+                node.textContent = txt.replace(reg, newValue)
+            })
         }
     },
     // 处理v-text指令
     text(node, vm, expr) {
         node.textContent = this.getVMValue(vm, expr)
-        window.watcher = new Watcher(vm,expr,(newVal,oldVal)=>{
+        new Watcher(vm,expr,(newVal,oldVal)=>{
             node.textContent = newVal
         })
     },
     // 处理v-html指令
     html(node, vm, expr) {
-        node.innerHtml = this.getVMValue(vm, expr)
+        node.innerHTML = this.getVMValue(vm, expr)
+        new Watcher(vm,expr,(newVal,oldVal)=>{
+            node.innerHTML = newVal
+        })
     },
     model(node, vm, expr) {
         node.value = this.getVMValue(vm, expr)
+        new Watcher(vm,expr,(newVal,oldVal)=>{
+            node.value = newVal
+        })
     },
     eventHandler(node, vm, type, expr) {
         // 给当前元素注册事件即可
