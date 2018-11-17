@@ -45,6 +45,9 @@ class Observer {
                 console.log("设置了值:" + value)
                 // 如果newValue是一个对象，也应该对她进行劫持
                 that.walk(newValue)
+
+                //数据改变,更新数据
+                window.watcher.update()
             }
         })
     }

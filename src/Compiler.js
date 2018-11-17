@@ -128,6 +128,9 @@ let CompileUtil = {
     // 处理v-text指令
     text(node, vm, expr) {
         node.textContent = this.getVMValue(vm, expr)
+        window.watcher = new Watcher(vm,expr,(newVal,oldVal)=>{
+            node.textContent = newVal
+        })
     },
     // 处理v-html指令
     html(node, vm, expr) {
