@@ -117,10 +117,8 @@ let CompileUtil = {
     mustache(node, vm) {
         let txt = node.textContent
         let reg = /\{\{(.+)\}\}/
-        console.log(reg.test(txt));
         if (reg.test(txt)) {
             let expr = RegExp.$1
-            console.log(expr);
             // debugger
             node.textContent = txt.replace(reg, this.getVMValue(vm, expr))
 
