@@ -9,6 +9,7 @@
     <p>{{msg}}</p>
     <p v-text="msg" title="text"></p>
     <p v-html="msg" title="html"></p>
+    <input type="text" v-model="car.brand">
     <input type="text" v-model="msg">
     <p>{{car.brand}}</p>
     <button v-on:click="clickFn">按钮</button>
@@ -29,8 +30,8 @@
         },
         methods: {
             clickFn() {
-                console.log(111)
-                console.log(this);
+                this.$data.msg = '哈哈'
+                 this.$data.car.brand = '奔驰'
             }
         }
     })

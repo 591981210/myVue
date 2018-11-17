@@ -132,20 +132,24 @@ let CompileUtil = {
     // 处理v-text指令
     text(node, vm, expr) {
         node.textContent = this.getVMValue(vm, expr)
-        new Watcher(vm,expr,(newVal,oldVal)=>{
+        new Watcher(vm, expr, (newVal, oldVal) => {
             node.textContent = newVal
         })
     },
     // 处理v-html指令
     html(node, vm, expr) {
         node.innerHTML = this.getVMValue(vm, expr)
-        new Watcher(vm,expr,(newVal,oldVal)=>{
+        new Watcher(vm, expr, (newVal, oldVal) => {
             node.innerHTML = newVal
         })
     },
     model(node, vm, expr) {
         node.value = this.getVMValue(vm, expr)
-        new Watcher(vm,expr,(newVal,oldVal)=>{
+        let self = this
+        node.addEventListener("input", function () {
+            self.setVMValue(vm, expr, this.value)
+        })
+        new Watcher(vm, expr, (newVal, oldVal) => {
             node.value = newVal
         })
     },
@@ -166,4 +170,19 @@ let CompileUtil = {
         })
         return data
     },
+    //处理复杂数据类型
+    setVMValue(vm, expr, value) {
+        let data = vm.$data
+        // car.brand
+        let arr = expr.split(".")
+
+        arr.forEach((key, index) => {
+            // 如果index是最后一个
+            if (index < arr.length - 1) {
+                data = data[key]
+            } else {
+                data[key] = value
+            }
+        })
+    }
 }
